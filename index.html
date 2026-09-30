@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111318" />
+  <title>Entreno Abril 2026 · Dieta, Entreno y Rachas</title>
+  <style>
+    :root{
+      --bg:#0d0f13;
+      --panel:#141820;
+      --panel-2:#1b202a;
+      --text:#f4f5f7;
+      --muted:#9aa3b2;
+      --border:#2b3340;
+      --accent:#f5cf2d;
+      --accent-2:#ffe978;
+      --good:#44c878;
+      --warn:#f3b84b;
+      --bad:#ed6a6a;
+      --info:#6cb7ff;
+      --shadow:0 12px 30px rgba(0,0,0,.22);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 10% 0%,rgba(245,207,45,.08),transparent 28rem),
+        var(--bg);
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.45;
+    }
+    button,input,select,textarea{font:inherit}
+    button,select,input{min-height:44px}
+    button{cursor:pointer}
+    .app{width:min(1120px,100%);margin:0 auto;padding:20px 16px 50px}
+    .hero{
+      display:flex;justify-content:space-between;gap:18px;align-items:flex-start;
+      padding:10px 2px 18px;border-bottom:1px solid var(--border);margin-bottom:18px;
+    }
+    .eyebrow{font-size:.78rem;font-weight:900;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+    h1{margin:.25rem 0 .2rem;font-size:clamp(1.75rem,5vw,3.2rem);line-height:1}
+    .sub{color:var(--muted);margin:0}
+    .hero-badge{
+      min-width:150px;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+      padding:12px 14px;text-align:right;box-shadow:var(--shadow)
+    }
+    .hero-badge strong{display:block;font-size:1.55rem}
+    .hero-badge span{font-size:.8rem;color:var(--muted)}
+    .tabs{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+      position:sticky;top:0;z-index:10;background:rgba(13,15,19,.94);backdrop-filter:blur(12px);
+      padding:10px 0 14px;margin-bottom:18px
+    }
+    .tab{
+      border:1px solid var(--border);background:var(--panel);color:var(--text);
+      border-radius:13px;padding:9px 8px;font-weight:800
+    }
+    .tab[aria-selected="true"]{background:var(--accent);color:#151515;border-color:var(--accent)}
+    .view{display:none}
+    .view.active{display:block}
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px
+    }
+    .date-nav{display:flex;gap:8px;align-items:center}
+    .date-pill{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:10px 14px;
+      font-weight:900;min-width:190px;text-align:center
+    }
+    .icon-btn,.ghost,.danger{
+      border:1px solid var(--border);background:var(--panel);color:var(--text);
+      border-radius:12px;padding:8px 12px;font-weight:800
+    }
+    .ghost:hover,.icon-btn:hover{border-color:#4b5565}
+    .danger{border-color:rgba(237,106,106,.45);color:#ffb7b7}
+    .grid{display:grid;gap:14px}
+    .grid.stats{grid-template-columns:repeat(3,1fr)}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{
+      background:linear-gradient(180deg,var(--panel),#11151b);
+      border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    .card h2,.card h3{margin:0 0 8px}
+    .metric{font-size:clamp(1.6rem,4vw,2.5rem);font-weight:950;letter-spacing:-.04em}
+    .muted{color:var(--muted)}
+    .small{font-size:.86rem}
+    .progress{
+      height:10px;background:#242a34;border-radius:999px;overflow:hidden;margin-top:10px;border:1px solid #303846
+    }
+    .progress > span{display:block;height:100%;background:var(--accent);width:0;transition:width .2s ease}
+    .section-title{display:flex;gap:10px;align-items:baseline;justify-content:space-between;margin:22px 0 10px}
+    .section-title h2{margin:0;font-size:1.2rem}
+    .meal-list,.exercise-list{display:grid;gap:10px}
+    .meal,.exercise{
+      border:1px solid var(--border);border-radius:15px;padding:13px;background:var(--panel-2)
+    }
+    .meal-top,.exercise-top{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px
+    }
+    .checkline{display:flex;align-items:center;gap:10px;font-weight:850;min-width:0}
+    .checkline input{width:22px;height:22px;accent-color:var(--accent);flex:0 0 auto}
+    select,input[type="number"],textarea{
+      width:100%;background:#0f1217;border:1px solid var(--border);color:var(--text);
+      border-radius:11px;padding:10px 12px;outline:none
+    }
+    select:focus,input:focus,textarea:focus,button:focus-visible{outline:3px solid rgba(245,207,45,.28);outline-offset:2px}
+    .meal-controls{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
+    .detail{
+      margin-top:9px;padding:10px 11px;border-radius:11px;background:#10141b;border:1px dashed #394251;
+      color:#dbe0e8;font-size:.9rem
+    }
+    .training-select{
+      display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0 16px
+    }
+    .day-btn{
+      border:1px solid var(--border);background:var(--panel-2);color:var(--text);
+      border-radius:12px;padding:9px 6px;font-weight:900
+    }
+    .day-btn.active{background:var(--accent);color:#111;border-color:var(--accent)}
+    .exercise .name{font-weight:900}
+    .exercise .scheme{color:var(--accent-2);font-size:.9rem;font-weight:800;margin-top:3px}
+    .exercise .notes{color:var(--muted);font-size:.86rem;margin-top:3px}
+    .exercise-foot{display:grid;grid-template-columns:150px 1fr;gap:10px;margin-top:10px}
+    .weight-wrap label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:4px}
+    .mini-checks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .mini-check{
+      border:1px solid var(--border);background:var(--panel-2);border-radius:14px;padding:12px
+    }
+    .mini-check label{display:flex;align-items:center;gap:10px;font-weight:850}
+    .mini-check input{width:21px;height:21px;accent-color:var(--accent)}
+    .calendar{
+      display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:10px
+    }
+    .dow{text-align:center;color:var(--muted);font-size:.75rem;font-weight:900;padding:4px}
+    .day-cell{
+      position:relative;aspect-ratio:1/1;min-height:58px;border:1px solid var(--border);border-radius:12px;
+      background:var(--panel-2);color:var(--text);padding:8px;text-align:left;font-weight:900
+    }
+    .day-cell.selected{outline:3px solid rgba(245,207,45,.35);border-color:var(--accent)}
+    .day-cell .dot{position:absolute;right:7px;bottom:7px;width:9px;height:9px;border-radius:50%;background:#414957}
+    .day-cell[data-status="good"] .dot{background:var(--good)}
+    .day-cell[data-status="warn"] .dot{background:var(--warn)}
+    .day-cell[data-status="bad"] .dot{background:var(--bad)}
+    .streak-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .streak{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:15px}
+    .streak strong{display:block;font-size:2rem}
+    .legend{display:flex;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.82rem;margin-top:10px}
+    .legend span{display:inline-flex;align-items:center;gap:6px}
+    .ldot{width:9px;height:9px;border-radius:50%;display:inline-block}
+    .notes-box ul{margin:.4rem 0 0;padding-left:1.15rem}
+    .notes-box li{margin:.35rem 0}
+    .toast{
+      position:fixed;right:18px;bottom:18px;background:#11161e;border:1px solid var(--border);color:var(--text);
+      border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);
+      pointer-events:none;transition:.2s ease;z-index:50
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .footer-note{text-align:center;color:var(--muted);font-size:.8rem;margin-top:22px}
+    @media(max-width:760px){
+      .hero{display:block}
+      .hero-badge{margin-top:12px;text-align:left;width:100%}
+      .grid.stats,.streak-cards{grid-template-columns:1fr}
+      .grid.two{grid-template-columns:1fr}
+      .training-select{grid-template-columns:repeat(3,1fr)}
+      .exercise-foot{grid-template-columns:1fr}
+      .mini-checks{grid-template-columns:1fr}
+      .tabs{grid-template-columns:repeat(4,1fr)}
+      .tab{font-size:.82rem}
+      .calendar{gap:5px}
+      .day-cell{min-height:46px;padding:6px}
+      .date-pill{min-width:150px}
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Plan personal · Abril 2026</div>
+      <h1>Entreno Abril 2026</h1>
+      <p class="sub">Dieta · Entrenamiento · Rachas de cumplimiento</p>
+    </div>
+    <div class="hero-badge">
+      <strong id="heroStreak">0 días</strong>
+      <span>racha perfecta actual</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Secciones">
+    <button class="tab" data-tab="hoy" aria-selected="true">🏠 Hoy</button>
+    <button class="tab" data-tab="dieta" aria-selected="false">🍽️ Dieta</button>
+    <button class="tab" data-tab="entreno" aria-selected="false">🏋️ Entreno</button>
+    <button class="tab" data-tab="rachas" aria-selected="false">🔥 Rachas</button>
+  </nav>
+
+  <div class="toolbar">
+    <div class="date-nav">
+      <button class="icon-btn" id="prevDay" type="button" aria-label="Día anterior">←</button>
+      <div class="date-pill" id="dateLabel">1 abril 2026</div>
+      <button class="icon-btn" id="nextDay" type="button" aria-label="Día siguiente">→</button>
+    </div>
+    <button class="danger" id="resetDay" type="button">Borrar día</button>
+  </div>
+
+  <section class="view active" id="view-hoy">
+    <div class="grid stats">
+      <article class="card">
+        <div class="muted small">Dieta</div>
+        <div class="metric" id="todayDietMetric">0%</div>
+        <div class="progress"><span id="todayDietBar"></span></div>
+      </article>
+      <article class="card">
+        <div class="muted small">Entrenamiento</div>
+        <div class="metric" id="todayTrainMetric">Descanso</div>
+        <div class="progress"><span id="todayTrainBar"></span></div>
+      </article>
+      <article class="card">
+        <div class="muted small">Cumplimiento del día</div>
+        <div class="metric" id="todayTotalMetric">0%</div>
+        <div class="progress"><span id="todayTotalBar"></span></div>
+      </article>
+    </div>
+
+    <div class="section-title"><h2>Comidas de hoy</h2><span class="muted small" id="mealCountText">0/5</span></div>
+    <div class="card">
+      <div id="todayMeals" class="meal-list"></div>
+    </div>
+
+    <div class="section-title"><h2>Entreno de hoy</h2><span class="muted small" id="todayTrainingTitle">Descanso</span></div>
+    <div class="card">
+      <p class="muted" style="margin-top:0">Elige qué día de rutina toca. Los días de descanso no rompen la racha perfecta si la dieta está completa.</p>
+      <div class="training-select" id="todayTrainingSelect"></div>
+      <div id="todayTrainingSummary"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-dieta">
+    <div class="section-title"><h2>Plan alimenticio</h2><span class="muted small">Marca cada comida y elige la opción realizada</span></div>
+    <div id="dietMeals" class="meal-list"></div>
+
+    <div class="card notes-box" style="margin-top:14px">
+      <h3>Notas del plan</h3>
+      <ul>
+        <li>Las comidas se pesan en crudo.</li>
+        <li>Se pueden usar especias y salsas 0 calorías.</li>
+        <li>No usar azúcar para endulzar; usar edulcorante sin calorías.</li>
+        <li>No usar aceite para freír.</li>
+        <li>Evitar bebidas con azúcar; se permiten bebidas sin azúcar.</li>
+        <li>Café o té: permitidos según el plan.</li>
+        <li>Un permitido por semana.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="view" id="view-entreno">
+    <div class="section-title"><h2>Rutina de entrenamiento</h2><span class="muted small">5 días</span></div>
+    <div class="card">
+      <div class="training-select" id="trainingSelect"></div>
+      <div id="trainingHeader"></div>
+      <div id="exerciseList" class="exercise-list"></div>
+    </div>
+
+    <div class="section-title"><h2>Complementos</h2><span class="muted small">objetivos semanales</span></div>
+    <div class="mini-checks">
+      <div class="mini-check"><label><input id="calvesDone" type="checkbox"> Gemelos</label><div class="small muted">3 veces/semana</div></div>
+      <div class="mini-check"><label><input id="absDone" type="checkbox"> Abdominales</label><div class="small muted">3 veces/semana</div></div>
+      <div class="mini-check"><label><input id="cardioDone" type="checkbox"> Cardio</label><div class="small muted">30 min · al menos 5 veces/semana</div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-rachas">
+    <div class="streak-cards">
+      <article class="streak"><div class="muted small">🔥 Dieta</div><strong id="dietStreak">0</strong><span class="muted">días · récord <b id="dietBest">0</b></span></article>
+      <article class="streak"><div class="muted small">🏋️ Entrenos</div><strong id="trainStreak">0</strong><span class="muted">sesiones · récord <b id="trainBest">0</b></span></article>
+      <article class="streak"><div class="muted small">🏆 Día perfecto</div><strong id="perfectStreak">0</strong><span class="muted">días · récord <b id="perfectBest">0</b></span></article>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Calendario de abril</h3>
+      <div id="calendar" class="calendar"></div>
+      <div class="legend">
+        <span><i class="ldot" style="background:var(--good)"></i> 100%</span>
+        <span><i class="ldot" style="background:var(--warn)"></i> parcial</span>
+        <span><i class="ldot" style="background:var(--bad)"></i> iniciado</span>
+        <span><i class="ldot" style="background:#414957"></i> sin registrar</span>
+      </div>
+    </div>
+
+    <div class="grid two" style="margin-top:14px">
+      <article class="card">
+        <h3>Resumen mensual</h3>
+        <p><b id="perfectDays">0</b> días perfectos</p>
+        <p><b id="dietDays">0</b> días con dieta completa</p>
+        <p><b id="workoutDays">0</b> entrenamientos completados</p>
+      </article>
+      <article class="card">
+        <h3>Datos</h3>
+        <p class="muted small">Todo se guarda automáticamente en este navegador mediante <code>localStorage</code>.</p>
+        <button class="ghost" id="exportBtn" type="button">Exportar copia JSON</button>
+      </article>
+    </div>
+  </section>
+
+  <p class="footer-note">Versión GitHub Pages · funciona sin servidor · datos guardados en el navegador</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const STORAGE_KEY = "entreno_abril_2026_v1";
+  const MONTH_DAYS = 30;
+
+  const dietPlan = [
+    {
+      id:"meal1", name:"Comida 1",
+      options:[
+        "Tortilla: 2 claras + 1 huevo + 100 g avena + 150 g fruta.",
+        "20 g proteína en polvo + 100 g harina de arroz + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "10 g proteína + 1 huevo + 100 g avena + 150 g fruta.",
+        "20 g proteína + 90 g tortitas de arroz + 30 g mermelada light + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "20 g proteína + 150 g pan blanco + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 90 g cereales sin azúcar o harina de arroz + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 90 g tortitas de arroz + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 140 g pan blanco + 10 g frutos secos o chocolate 85% + 150 g fruta.",
+        "1 huevo + 2 claras revueltos + 150 g pan blanco + 150 g fruta."
+      ]
+    },
+    {
+      id:"post", name:"Post entreno", trainingOnly:true,
+      options:[
+        "30 g proteína en polvo + 90 g cereales sin azúcar o harina de arroz + 100 g plátano.",
+        "30 g proteína en polvo + 90 g tortitas de arroz + 100 g plátano.",
+        "30 g proteína en polvo + 140 g pan blanco + 100 g plátano.",
+        "5 claras + 140 g pan blanco o 90 g tortitas de arroz + 100 g plátano.",
+        "100 g pechuga de pollo o pavo + 140 g pan blanco o 90 g tortitas de arroz + 100 g plátano."
+      ]
+    },
+    {
+      id:"meal2", name:"Comida 2",
+      options:[
+        "30 g proteína + 60 g cereales sin azúcar o harina de arroz + 10 g frutos secos o chocolate 85%.",
+        "30 g proteína + 90 g pan blanco + 10 g frutos secos o chocolate 85%.",
+        "30 g proteína + 50 g tortitas de arroz + 30 g mermelada light + 10 g frutos secos o chocolate 85%.",
+        "1 huevo + 4 claras revueltos + 90 g pan blanco o 60 g tortitas de arroz.",
+        "Tortilla: 1 huevo + 4 claras + 60 g avena.",
+        "100 g pechuga de pollo o pavo + 90 g pan blanco o 60 g tortitas de arroz + 10 g frutos secos o chocolate 85%."
+      ]
+    },
+    {
+      id:"meal3", name:"Comida 3",
+      options:[
+        "200 g carne vacuna magra + 120 g pasta cruda + verduras + 5 ml aceite de oliva o 25 g aguacate.",
+        "200 g carne vacuna magra + 400 g patata o batata cruda + verduras + 5 ml aceite de oliva o 25 g aguacate.",
+        "200 g carne vacuna magra + 120 g arroz crudo + verduras + 5 ml aceite de oliva o 25 g aguacate.",
+        "Milanesa: 200 g carne magra + 30 g avena + 90 g arroz crudo + verduras + 5 ml aceite o 25 g aguacate.",
+        "200 g carne magra + 50 g pan blanco + 80 g arroz crudo + verduras + 5 ml aceite o 25 g aguacate.",
+        "200 g carne magra + 240 g ñoquis crudos + verduras + 5 ml aceite o 25 g aguacate.",
+        "1 huevo + 180 g carne magra + 120 g pasta cruda + verduras.",
+        "1 huevo + 180 g carne magra + 400 g patata o batata cruda + verduras.",
+        "1 huevo + 180 g carne magra + 120 g arroz crudo + verduras.",
+        "Milanesa: 180 g carne magra + 30 g avena + 1 huevo + 90 g arroz crudo + verduras.",
+        "1 huevo + 180 g carne magra + 50 g pan blanco + 80 g arroz crudo + verduras.",
+        "1 huevo + 180 g carne magra + 240 g ñoquis crudos + verduras."
+      ]
+    },
+    {
+      id:"meal4", name:"Comida 4",
+      options:[
+        "Tortilla: 2 claras + 1 huevo + 90 g avena.",
+        "20 g proteína + 90 g harina de arroz + 10 g frutos secos o chocolate 85%.",
+        "10 g proteína + 1 huevo + 90 g avena.",
+        "20 g proteína + 80 g tortitas de arroz + 30 g mermelada light + 10 g frutos secos o chocolate 85%.",
+        "20 g proteína + 140 g pan blanco + 10 g frutos secos o chocolate 85%.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 80 g cereales sin azúcar o harina de arroz + 10 g frutos secos o chocolate 85%.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 80 g tortitas de arroz + 10 g frutos secos o chocolate 85%.",
+        "150 g queso fresco batido o 120 g yogur +proteínas + 120 g pan blanco + 10 g frutos secos o chocolate 85%.",
+        "1 huevo + 2 claras revueltos + 140 g pan blanco."
+      ]
+    },
+    {
+      id:"meal5", name:"Comida 5",
+      options:[
+        "200 g pollo o pavo + 100 g arroz crudo + verduras + 5 ml aceite de oliva o 25 g aguacate.",
+        "200 g pollo o pavo + 100 g pasta cruda + verduras + 5 ml aceite o 25 g aguacate.",
+        "200 g pollo o pavo + 350 g patata o batata cruda + verduras + 5 ml aceite o 25 g aguacate.",
+        "200 g pollo o pavo + 50 g pan blanco + 60 g arroz crudo + verduras + 5 ml aceite o 25 g aguacate.",
+        "200 g pollo o pavo + 200 g ñoquis crudos + verduras + 5 ml aceite o 25 g aguacate.",
+        "1 huevo + 20 g lomo embuchado o 40 g jamón cocido extra + 150 g pollo/pavo + 100 g arroz crudo + verduras.",
+        "1 huevo + 20 g lomo embuchado o 40 g jamón cocido extra + 150 g pollo/pavo + 100 g pasta cruda + verduras.",
+        "1 huevo + 20 g lomo embuchado o 40 g jamón cocido extra + 150 g pollo/pavo + 350 g patata/batata cruda + verduras.",
+        "1 huevo + 20 g lomo embuchado o 40 g jamón cocido extra + 150 g pollo/pavo + 50 g pan + 60 g arroz crudo + verduras.",
+        "1 huevo + 20 g lomo embuchado o 40 g jamón cocido extra + 150 g pollo/pavo + 200 g ñoquis crudos + verduras."
+      ]
+    }
+  ];
+
+  const trainingPlan = {
+    rest:{title:"Descanso", muscles:"Recuperación", exercises:[]},
+    d1:{title:"Día 1", muscles:"Pectoral · Hombros · Tríceps", exercises:[
+      ["Aperturas en máquina sentado","3×10","Todas descendentes, terminar con parciales · RIR 0"],
+      ["Press inclinado en Smith","3×12","Cluster sets 6-3-3 · RIR 0"],
+      ["Press en máquina o poleas sentado","1×6 + 2×10","Top set · RIR 1"],
+      ["Aperturas en poleas bajas de pie","1×6 + 2×10","Top set; última descendente + parciales · RIR 2"],
+      ["Press militar con mancuernas","1×6 + 2×8","Top set · RIR 1"],
+      ["Laterales polea unilateral + mancuernas","3×10","Biserie; última descendente + parciales · RIR 0"],
+      ["JM press tríceps en Smith","1×6 + 3×10","Top set · RIR 1"],
+      ["Extensión tríceps barra + unilateral polea","1×6 + 2×10","Biserie; última descendente + parciales · RIR 0"]
+    ]},
+    d2:{title:"Día 2", muscles:"Espalda · Hombro posterior · Bíceps", exercises:[
+      ["Jalón al pecho prono en máquina a discos","1×6 + 1×10","Top set · RIR 2"],
+      ["Remo mancuernas banco inclinado prono","1×6 + 2×8","Top set · RIR 1"],
+      ["Remo Gironda agarre neutro","1×6 + 2×10","Última rest-pause + parciales · RIR 0"],
+      ["Jalón al pecho agarre supino","2×10","Última descendente + parciales · RIR 0"],
+      ["Kelso shrug con mancuernas banco inclinado","1×6 + 2×10","Top set · RIR 2"],
+      ["Posteriores en máquina sentado","1×6 + 3×10","Última descendente + parciales · RIR 1"],
+      ["Curl bíceps máquina Scott","1×6 + 3×10","Top set · RIR 1"],
+      ["Curl inclinado + curl martillo","1×6 + 2×10","Biserie; última descendente + parciales · RIR 0"]
+    ]},
+    d3:{title:"Día 3", muscles:"Cuádriceps · Femorales", exercises:[
+      ["Extensión de cuádriceps en máquina","1×6 + 3×10","Última descendente + parciales · RIR 0"],
+      ["Sentadilla Hack o Smith","1×6 + 3×8","Top set · RIR 1"],
+      ["Prensa 45","1×6 + 3×10","Última rest-pause · RIR 0"],
+      ["Prensa horizontal","1×6 + 3×10","RIR 2"],
+      ["Curl femoral sentado en máquina o polea","1×6 + 3×10","Última descendente + parciales · RIR 0"],
+      ["Femoral en máquina tumbado","1×8 + 3×10","Top set · RIR 1"],
+      ["Aductores en máquina","1×8 + 3×10","Última descendente + parciales · RIR 2"]
+    ]},
+    d4:{title:"Día 4", muscles:"Pectoral · Hombros · Tríceps", exercises:[
+      ["Press militar en Smith","1×6 + 2×8","Última rest-pause · RIR 1"],
+      ["Elevaciones laterales mancuernas sentado","3×10","Todas descendentes + parciales · RIR 0"],
+      ["Elevaciones frontales barra recta polea baja","1×6 + 2×10","Top set · RIR 2"],
+      ["Press plano en Smith","1×6 + 3×10","Última rest-pause · RIR 0"],
+      ["Aperturas banco inclinado en polea","1×6 + 2×10","Última descendente + parciales · RIR 1"],
+      ["Aperturas en polea alta","3×10","RIR 2"],
+      ["Press francés con mancuernas","1×6 + 3×10","Top set · RIR 1"],
+      ["Extensión tríceps cuerda + trasnuca polea","3×10","Biserie; última descendente + parciales · RIR 0"]
+    ]},
+    d5:{title:"Día 5", muscles:"Espalda · Hombro posterior · Bíceps", exercises:[
+      ["Jalón al pecho agarre abierto neutro","1×6 + 1×10","Top set · RIR 1"],
+      ["Remo en Smith agarre prono","1×6 + 2×10","Última rest-pause · RIR 0"],
+      ["Remo unilateral sentado polea media neutro","1×6 + 2×10","Última descendente + parciales · RIR 0"],
+      ["Pull over en polea","2×10","RIR 2"],
+      ["Remo al mentón con barra agarre abierto","1×6 + 2×10","Top set · RIR 2"],
+      ["Posteriores a un brazo en polea","1×6 + 3×10","Última descendente + parciales · RIR 1"],
+      ["Curl bíceps con barra de pie","1×6 + 3×10","Top set · RIR 1"],
+      ["Curl Bayesian unilateral + curl mancuernas","1×6 + 2×10","Biserie; última descendente + parciales · RIR 0"]
+    ]}
+  };
+
+  const weekdayNames = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const state = loadState();
+  let selectedDay = initialDay();
+
+  function initialDay(){
+    const now = new Date();
+    if(now.getFullYear()===2026 && now.getMonth()===3) return Math.min(MONTH_DAYS, Math.max(1, now.getDate()));
+    const used = Object.keys(state.days||{}).map(k=>Number(k.slice(-2))).filter(Boolean).sort((a,b)=>b-a);
+    return used[0] || 1;
+  }
+
+  function defaultDay(){
+    return {
+      trainingDay:"rest",
+      meals:{},
+      exercises:{},
+      weights:{},
+      calves:false,
+      abs:false,
+      cardio:false
+    };
+  }
+
+  function dayKey(day){ return `2026-04-${String(day).padStart(2,"0")}`; }
+
+  function getDay(day=selectedDay){
+    const key = dayKey(day);
+    if(!state.days[key]) state.days[key] = defaultDay();
+    return state.days[key];
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && parsed.days ? parsed : {days:{}};
+    }catch(e){
+      return {days:{}};
+    }
+  }
+
+  function saveState(show=false){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if(show) toast("Guardado");
+  }
+
+  function dateObj(day){ return new Date(Date.UTC(2026,3,day)); }
+
+  function dayLabel(day){
+    const d = dateObj(day);
+    return `${weekdayNames[d.getUTCDay()]} ${day} abril`;
+  }
+
+  function requiredMeals(d){
+    const ids = ["meal1","meal2","meal3","meal4","meal5"];
+    if(d.trainingDay !== "rest") ids.splice(1,0,"post");
+    return ids;
+  }
+
+  function dietStats(d){
+    const req = requiredMeals(d);
+    const done = req.filter(id=>d.meals?.[id]?.done).length;
+    return {done,total:req.length,pct:req.length ? Math.round(done/req.length*100) : 0, complete:done===req.length};
+  }
+
+  function trainingStats(d){
+    if(d.trainingDay==="rest") return {done:0,total:0,pct:100,complete:true,isRest:true};
+    const ex = trainingPlan[d.trainingDay].exercises;
+    const done = ex.filter((_,i)=>d.exercises?.[`${d.trainingDay}_${i}`]).length;
+    return {done,total:ex.length,pct:ex.length?Math.round(done/ex.length*100):0,complete:done===ex.length,isRest:false};
+  }
+
+  function totalPct(d){
+    const ds=dietStats(d), ts=trainingStats(d);
+    return d.trainingDay==="rest" ? ds.pct : Math.round((ds.pct+ts.pct)/2);
+  }
+
+  function perfect(d){
+    return dietStats(d).complete && trainingStats(d).complete;
+  }
+
+  function hasAny(d){
+    if(!d) return false;
+    return Object.values(d.meals||{}).some(x=>x?.done) ||
+           Object.values(d.exercises||{}).some(Boolean) ||
+           d.trainingDay!=="rest" || d.calves || d.abs || d.cardio;
+  }
+
+  function currentCalendarStreak(predicate){
+    let end = selectedDay;
+    while(end>1 && !state.days[dayKey(end)] && state.days[dayKey(end-1)]) end--;
+    let count=0;
+    for(let i=selectedDay;i>=1;i--){
+      const d=state.days[dayKey(i)];
+      if(!d || !predicate(d)) break;
+      count++;
+    }
+    return count;
+  }
+
+  function streakSeries(predicate){
+    let current=0,best=0;
+    for(let i=1;i<=MONTH_DAYS;i++){
+      const d=state.days[dayKey(i)];
+      if(d && predicate(d)){ current++; best=Math.max(best,current); }
+      else current=0;
+    }
+    return best;
+  }
+
+  function trainingSessionStreaks(){
+    let current=0,best=0,lastCompleted=false;
+    const sessions=[];
+    for(let i=1;i<=MONTH_DAYS;i++){
+      const d=state.days[dayKey(i)];
+      if(d && d.trainingDay!=="rest") sessions.push(trainingStats(d).complete);
+    }
+    sessions.forEach(ok=>{
+      current = ok ? current+1 : 0;
+      best=Math.max(best,current);
+    });
+    let tail=0;
+    for(let i=sessions.length-1;i>=0;i--){
+      if(sessions[i]) tail++; else break;
+    }
+    return {current:tail,best};
+  }
+
+  function optionHtml(count, selected){
+    let html="";
+    for(let i=0;i<count;i++){
+      html += `<option value="${i}" ${Number(selected)===i?"selected":""}>Opción ${i+1}</option>`;
+    }
+    return html;
+  }
+
+  function renderMeals(targetId, compact=false){
+    const target=document.getElementById(targetId);
+    const d=getDay();
+    const plan=dietPlan.filter(m=>!m.trainingOnly || d.trainingDay!=="rest");
+    target.innerHTML=plan.map(m=>{
+      const saved=d.meals[m.id] || {done:false,option:0};
+      if(compact){
+        return `<div class="meal">
+          <div class="meal-top">
+            <label class="checkline">
+              <input type="checkbox" data-meal-check="${m.id}" ${saved.done?"checked":""}>
+              <span>${m.name}</span>
+            </label>
+            <span class="small muted">Opción ${Number(saved.option||0)+1}</span>
+          </div>
+        </div>`;
+      }
+      const idx=Number(saved.option||0);
+      return `<article class="meal">
+        <div class="meal-top">
+          <label class="checkline">
+            <input type="checkbox" data-meal-check="${m.id}" ${saved.done?"checked":""}>
+            <span>${m.name}</span>
+          </label>
+          <span class="small muted">${saved.done?"Hecha":"Pendiente"}</span>
+        </div>
+        <div class="meal-controls">
+          <select data-meal-option="${m.id}" aria-label="Elegir opción de ${m.name}">
+            ${optionHtml(m.options.length,idx)}
+          </select>
+          <div class="detail" id="detail-${m.id}">${m.options[idx]}</div>
+        </div>
+      </article>`;
+    }).join("");
+
+    target.querySelectorAll("[data-meal-check]").forEach(el=>{
+      el.addEventListener("change",e=>{
+        const id=e.target.dataset.mealCheck;
+        const saved=d.meals[id] || {option:0};
+        d.meals[id]={...saved,done:e.target.checked};
+        saveState();
+        renderAll();
+      });
+    });
+
+    if(!compact){
+      target.querySelectorAll("[data-meal-option]").forEach(el=>{
+        el.addEventListener("change",e=>{
+          const id=e.target.dataset.mealOption;
+          const meal=dietPlan.find(x=>x.id===id);
+          const saved=d.meals[id] || {done:false};
+          saved.option=Number(e.target.value);
+          d.meals[id]=saved;
+          document.getElementById(`detail-${id}`).textContent=meal.options[saved.option];
+          saveState();
+          updateSummary();
+        });
+      });
+    }
+  }
+
+  function trainingButtons(targetId){
+    const target=document.getElementById(targetId);
+    const d=getDay();
+    const entries=[["rest","Descanso"],["d1","Día 1"],["d2","Día 2"],["d3","Día 3"],["d4","Día 4"],["d5","Día 5"]];
+    target.innerHTML=entries.map(([id,label])=>
+      `<button type="button" class="day-btn ${d.trainingDay===id?"active":""}" data-training-day="${id}">${label}</button>`
+    ).join("");
+    target.querySelectorAll("[data-training-day]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        d.trainingDay=btn.dataset.trainingDay;
+        saveState();
+        renderAll();
+      });
+    });
+  }
+
+  function renderTodayTraining(){
+    trainingButtons("todayTrainingSelect");
+    const d=getDay(), plan=trainingPlan[d.trainingDay], stats=trainingStats(d);
+    document.getElementById("todayTrainingTitle").textContent = d.trainingDay==="rest" ? "Descanso" : `${plan.title} · ${plan.muscles}`;
+    document.getElementById("todayTrainingSummary").innerHTML = d.trainingDay==="rest"
+      ? `<div class="detail">Día de descanso. Completa la dieta para mantener la racha perfecta.</div>`
+      : `<div class="detail"><b>${plan.title}: ${plan.muscles}</b><br>${stats.done}/${stats.total} ejercicios completados · ${stats.pct}%</div>`;
+  }
+
+  function renderTraining(){
+    trainingButtons("trainingSelect");
+    const d=getDay(), plan=trainingPlan[d.trainingDay];
+    const head=document.getElementById("trainingHeader");
+    const list=document.getElementById("exerciseList");
+
+    if(d.trainingDay==="rest"){
+      head.innerHTML=`<div class="detail"><b>Descanso.</b> Usa este día para recuperación.</div>`;
+      list.innerHTML="";
+    } else {
+      head.innerHTML=`<div class="section-title"><h2>${plan.title}</h2><span class="muted">${plan.muscles}</span></div>`;
+      list.innerHTML=plan.exercises.map((ex,i)=>{
+        const key=`${d.trainingDay}_${i}`;
+        const done=!!d.exercises[key];
+        const weight=d.weights[key] ?? "";
+        return `<article class="exercise">
+          <div class="exercise-top">
+            <label class="checkline">
+              <input type="checkbox" data-exercise-check="${key}" ${done?"checked":""}>
+              <span class="name">${ex[0]}</span>
+            </label>
+          </div>
+          <div class="scheme">${ex[1]}</div>
+          <div class="notes">${ex[2]}</div>
+          <div class="exercise-foot">
+            <div class="weight-wrap">
+              <label for="w-${key}">Carga / referencia</label>
+              <input id="w-${key}" data-weight="${key}" type="number" min="0" step="0.5" inputmode="decimal" value="${weight}" placeholder="kg">
+            </div>
+            <div class="detail">Marca el ejercicio al terminarlo. La carga queda guardada para este día.</div>
+          </div>
+        </article>`;
+      }).join("");
+
+      list.querySelectorAll("[data-exercise-check]").forEach(el=>{
+        el.addEventListener("change",e=>{
+          d.exercises[e.target.dataset.exerciseCheck]=e.target.checked;
+          saveState();
+          updateSummary();
+          renderStreaks();
+        });
+      });
+      list.querySelectorAll("[data-weight]").forEach(el=>{
+        el.addEventListener("change",e=>{
+          const v=e.target.value.trim();
+          d.weights[e.target.dataset.weight]=v===""?"":Math.max(0,Number(v)||0);
+          saveState();
+        });
+      });
+    }
+
+    const map=[["calvesDone","calves"],["absDone","abs"],["cardioDone","cardio"]];
+    map.forEach(([id,prop])=>{
+      const el=document.getElementById(id);
+      el.checked=!!d[prop];
+      el.onchange=()=>{ d[prop]=el.checked; saveState(); renderStreaks(); };
+    });
+  }
+
+  function updateSummary(){
+    const d=getDay(), ds=dietStats(d), ts=trainingStats(d), total=totalPct(d);
+    const baseMeals=["meal1","meal2","meal3","meal4","meal5"];
+    const baseDone=baseMeals.filter(id=>d.meals?.[id]?.done).length;
+
+    document.getElementById("todayDietMetric").textContent=`${ds.pct}%`;
+    document.getElementById("todayDietBar").style.width=`${ds.pct}%`;
+    document.getElementById("todayTrainMetric").textContent=ts.isRest?"Descanso":`${ts.pct}%`;
+    document.getElementById("todayTrainBar").style.width=ts.isRest?"100%":`${ts.pct}%`;
+    document.getElementById("todayTotalMetric").textContent=`${total}%`;
+    document.getElementById("todayTotalBar").style.width=`${total}%`;
+    document.getElementById("mealCountText").textContent=`${baseDone}/5${d.trainingDay!=="rest" ? (d.meals?.post?.done ? " + post ✅":" + post") : ""}`;
+    document.getElementById("heroStreak").textContent=`${currentCalendarStreak(perfect)} días`;
+  }
+
+  function renderStreaks(){
+    const dietCurrent=currentCalendarStreak(d=>dietStats(d).complete);
+    const dietBest=streakSeries(d=>dietStats(d).complete);
+    const perfectCurrent=currentCalendarStreak(perfect);
+    const perfectBest=streakSeries(perfect);
+    const train=trainingSessionStreaks();
+
+    document.getElementById("dietStreak").textContent=dietCurrent;
+    document.getElementById("dietBest").textContent=dietBest;
+    document.getElementById("trainStreak").textContent=train.current;
+    document.getElementById("trainBest").textContent=train.best;
+    document.getElementById("perfectStreak").textContent=perfectCurrent;
+    document.getElementById("perfectBest").textContent=perfectBest;
+
+    let pd=0,dd=0,wd=0;
+    for(let i=1;i<=MONTH_DAYS;i++){
+      const d=state.days[dayKey(i)];
+      if(!d) continue;
+      if(dietStats(d).complete) dd++;
+      if(d.trainingDay!=="rest" && trainingStats(d).complete) wd++;
+      if(perfect(d)) pd++;
+    }
+    document.getElementById("perfectDays").textContent=pd;
+    document.getElementById("dietDays").textContent=dd;
+    document.getElementById("workoutDays").textContent=wd;
+    renderCalendar();
+  }
+
+  function renderCalendar(){
+    const target=document.getElementById("calendar");
+    const headers=["L","M","X","J","V","S","D"].map(x=>`<div class="dow">${x}</div>`).join("");
+    const first=new Date(Date.UTC(2026,3,1)).getUTCDay(); // 0 Sunday
+    const mondayIndex=(first+6)%7;
+    let cells="";
+    for(let i=0;i<mondayIndex;i++) cells+=`<div></div>`;
+    for(let day=1;day<=MONTH_DAYS;day++){
+      const d=state.days[dayKey(day)];
+      let status="";
+      if(d && hasAny(d)){
+        const pct=totalPct(d);
+        status=pct===100?"good":pct>=60?"warn":"bad";
+      }
+      cells+=`<button type="button" class="day-cell ${day===selectedDay?"selected":""}" data-calendar-day="${day}" data-status="${status}">
+        ${day}<span class="dot"></span>
+      </button>`;
+    }
+    target.innerHTML=headers+cells;
+    target.querySelectorAll("[data-calendar-day]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        selectedDay=Number(btn.dataset.calendarDay);
+        switchTab("hoy");
+        renderAll();
+      });
+    });
+  }
+
+  function renderAll(){
+    document.getElementById("dateLabel").textContent=dayLabel(selectedDay);
+    renderMeals("todayMeals",true);
+    renderMeals("dietMeals",false);
+    renderTodayTraining();
+    renderTraining();
+    updateSummary();
+    renderStreaks();
+  }
+
+  function switchTab(name){
+    document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===name)));
+    document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${name}`));
+  }
+
+  document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>switchTab(btn.dataset.tab)));
+
+  document.getElementById("prevDay").addEventListener("click",()=>{
+    selectedDay=selectedDay<=1?MONTH_DAYS:selectedDay-1; renderAll();
+  });
+  document.getElementById("nextDay").addEventListener("click",()=>{
+    selectedDay=selectedDay>=MONTH_DAYS?1:selectedDay+1; renderAll();
+  });
+  document.getElementById("resetDay").addEventListener("click",()=>{
+    if(confirm(`¿Borrar todos los datos del ${dayLabel(selectedDay)}?`)){
+      delete state.days[dayKey(selectedDay)];
+      saveState(); renderAll(); toast("Día borrado");
+    }
+  });
+
+  document.getElementById("exportBtn").addEventListener("click",()=>{
+    const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download="entreno-abril-2026-backup.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+
+  let toastTimer;
+  function toast(msg){
+    const el=document.getElementById("toast");
+    el.textContent=msg; el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.classList.remove("show"),1600);
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
